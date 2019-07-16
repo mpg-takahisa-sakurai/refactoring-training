@@ -129,7 +129,8 @@ export default {
       body: "",
       bodyError: false,
       agreement: false,
-      agreementError: false
+      agreementError: false,
+      loading: false
     };
   },
   computed: {
@@ -157,30 +158,35 @@ export default {
       );
     },
     onSubmit() {
-      if (this.validate()) {
-        const data = new FormData();
-        data.append("name", this.name);
-        data.append("age", this.age);
-        data.append("gender", this.gender);
-        data.append("job", this.job);
-        data.append("job-name", this.jobName);
-        data.append("body", this.body);
-        data.append("agreement", this.agreement);
-        axios
-          .post("http://localhost:3000/messages", data)
-          .then(res => {
-            // eslint-disable-next-line
-            console.log(res);
-            alert("送信しました");
-            // location.reload()
-          })
-          .catch(e => {
-            // eslint-disable-next-line
-            console.error(e);
-          });
-      } else {
+      if (this.loading) return
+      if (!this.validate()) {
         alert("入力エラーがあります");
+        return
       }
+
+      this.loading = true
+      const data = new FormData();
+      data.append("name", this.name);
+      data.append("age", this.age);
+      data.append("gender", this.gender);
+      data.append("job", this.job);
+      data.append("job-name", this.jobName);
+      data.append("body", this.body);
+      data.append("agreement", this.agreement);
+      axios
+        .post("http://localhost:3000/messages", data)
+        .then(res => {
+          // eslint-disable-next-line
+          console.log(res);
+          alert("送信しました");
+          // location.reload()
+        })
+        .catch(e => {
+          // eslint-disable-next-line
+          console.error(e);
+        }).finally(() => {
+          this.loading = false
+        });
     }
   },
   watch: {
